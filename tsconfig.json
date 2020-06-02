@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "outDir": "./built",
+        "allowJs": true,
+	    "target": "es5",
+        "moduleResolution": "node",
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "noImplicitThis": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true
+    },
+    "include": [
+        "./src/**/*"
+    ],
+    "libs": [
+        "ES2020"
+    ],
+    "skipLibCheck": true,
+    "typeRoots": [
+        "../node_modules/@types"
+      ]
+}
