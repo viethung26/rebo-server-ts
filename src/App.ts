@@ -24,10 +24,15 @@ class App {
     }
     private initMongo() {
         const mongo = config.database.mongo
-        console.info('9779 mono', mongo)
-        mongoose.connect(mongo, () => {
+        const mongoConfig = { 
+            useFindAndModify: false, 
+            useNewUrlParser: true, 
+            useUnifiedTopology: true,
+            useCreateIndex: true
+        }
+        mongoose.connect(mongo, mongoConfig, () => {
             console.info('Mongodb connected')
-        })
+        },)
     }
 }
 

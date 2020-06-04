@@ -2,6 +2,8 @@ import express from 'express'
 import fs from 'fs'
 import path from 'path'
 import "reflect-metadata"
+import 'module-alias/register'
+
 
 const route = express.Router()
 const versions = fs.readdirSync(__dirname)
@@ -16,6 +18,7 @@ versions.forEach(version => {
             // 9779 improvement: auto inject controller
             const router = new Router()
             subRoute.use(`/${module.split(".")[0]}`, router.router)
+            
         })
         route.use(`/${version}`, subRoute)
     }

@@ -8,6 +8,7 @@
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "inversify": "^5.0.1",
+    "module-alias": "^2.2.2",
     "mongoose": "^5.9.10",
     "multer": "^1.4.2",
     "reflect-metadata": "^0.1.13"
@@ -16,15 +17,23 @@
     "@types/express": "^4.17.6",
     "@types/mongoose": "^5.7.12",
     "@types/node": "^13.13.2",
+    "dotenv": "^8.2.0",
     "eslint": "^6.8.0",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.3",
-    "typescript": "^3.8.3"
+    "typescript": "^3.9.3"
   },
   "scripts": {
     "watch": "concurrently \"yarn watch-js\" \"yarn build\"",
     "watch-js": "nodemon built/server.js",
     "build": "tsc -w",
     "eslint": "eslint src/server.ts"
+  },
+  "_moduleAliases": {
+    "@m": "./built/models/",
+    "@r": "./built/routers",
+    "@mw": "./built/middlewares",
+    "@c": "./built/controllers",
+    "@s": "./built/services"
   }
 }

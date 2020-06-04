@@ -1,5 +1,5 @@
 import { CrudService } from "../crud";
-import { User } from "../../models/user";
+import { User } from "@m/user"
 import {injectable} from 'inversify'
 
 @injectable()

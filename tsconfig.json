@@ -8,7 +8,21 @@
         "esModuleInterop": true,
         "noImplicitThis": true,
         "emitDecoratorMetadata": true,
-        "experimentalDecorators": true
+        "experimentalDecorators": true,
+        "baseUrl": "./src",
+        "paths": {
+            "@r/*": ["./routers/*"],
+            "@r": ["./routers/"],
+            "@m/*": ["./models/*"],
+            "@m": ["./models/"],
+            "@mw/*": ["./middlewares/*"],
+            "@mw": ["./middlewares/"],
+            "@c/*": ["./controllers/*"],
+            "@c": ["./controllers/"],
+            "@s/*": ["./services/*", "./services/*"],
+            "@s": ["./services/"]
+        },
+        "resolveJsonModule": true
     },
     "include": [
         "./src/**/*"

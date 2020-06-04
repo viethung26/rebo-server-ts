@@ -1,11 +1,8 @@
 import CrudController from "../crud";
-import { ICrudService } from "../../services/crud";
-import { DIContainer, TYPES } from "../../services";
-import UserService from "../../services/crud/user";
+import { DIContainer, TYPES, ICrudService, UserService } from "@s";
 
 export default class UserController extends CrudController<ICrudService> {
     constructor() {
         super(DIContainer.get<UserService>(TYPES.UserService))
     }
-
 }

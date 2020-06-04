@@ -1,5 +1,4 @@
 import './configEnv'
-console.info('9779 env', process.env)
 
 export const config = {
     database: {
