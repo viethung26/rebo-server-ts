@@ -4,8 +4,11 @@ import bodyParser from 'body-parser'
 import api from './routers'
 import {config} from './config'
 import mongoose from 'mongoose'
+import cookieParser from 'cookie-parser'
+import Socket from './sockets'
 class App {
     public app
+    public io
     constructor() {
         this.app = express()
         this.initConfig()
@@ -15,6 +18,7 @@ class App {
     }
     private initConfig() {
         this.app.use(bodyParser.json())
+        this.app.use(cookieParser())
     }
     private initTracking() {
         this.app.use(morgan('dev'))
@@ -34,7 +38,15 @@ class App {
             console.info('Mongodb connected')
         },)
     }
+    private runSocket(server) {
+        new Socket(server).run()
+    }
+    public run(port: number, callback: Function) {
+        const server = this.app.listen(port, () => callback())
+        this.runSocket(server)
+        return server
+    }
 }
 
 
-export default new App().app
+export default new App()

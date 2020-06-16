@@ -1,4 +1,7 @@
 import { Model, DocumentQuery } from "@m/base";
+import { BaseError } from "./error/";
+import mongoose from 'mongoose'
+import DatabaseErrorService from "./error/database";
 
 export interface ICrudService {
     create(data: any, option: ICrudOption): any
@@ -21,21 +24,34 @@ export class CrudService<T extends Model> implements ICrudService {
     constructor(public model: T) {}
     async exec(promise: Promise<any> | any){
         try {
+            let result
             if (promise.hasOwnProperty("exec")) {
-                return await promise.exec();
+                result = await promise.exec();
             } else {
-                return await promise
+                result = await promise
             }
+            return result
+
         } 
-        catch(e) {
-            console.info('9779 error', e)
+        catch(err) {
+            if (err instanceof mongoose.mongo.MongoError) {
+                throw new DatabaseErrorService(err).getErrorData()
+            }
+            if (err instanceof BaseError) {
+                throw err
+            }
+            console.info('9779 err',err)
+            throw {
+                status: 500,
+                message: "Another error"
+            }
         }
     }
     async create(data: any, option: ICrudOption) {
         // 9779 knowledge
+        console.info('9779 req', data)
         const query = this.model.create(data)
         const result = await this.exec(query)
-        console.info('9779 result query', result)
         return result
     }
     async readAll(option: ICrudOption = {limit: 10, offset: 0}) {
@@ -50,7 +66,9 @@ export class CrudService<T extends Model> implements ICrudService {
     }
     async updateItem(data, option: ICrudOption) {
         const {_id} = option.filter
+        console.info('9779 ', data, _id)
         let query = this.model.findOneAndUpdate({_id }, data, {new: true})
+        // console.info('9779 query', query)
         const result = await this.exec(query)
         return this.readItem(option)
     }

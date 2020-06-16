@@ -9,6 +9,7 @@ interface IError {
 
 export interface Request extends express.Request {
     queryInfo?: ICrudOption
+    user?: any
 }
 export interface Response extends express.Response {
 }
@@ -17,10 +18,11 @@ export default class BaseRouter {
         return (req: Request, res: Response) => func
         .bind(this)(req, res)
         .catch((err) => {
-            console.info('9779 error', err)
+            this.onError(res, err)
         })
     }
     onError(res: Response, error: IError) {
+        console.info('9779 e', error)
         const errorMessage = {
             "error": {
                 message: error.message,

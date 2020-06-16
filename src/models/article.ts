@@ -16,16 +16,28 @@ const articleSchema: Schema<ArticleModel> = new Schema({
     },
     content: {
         type: String,
+        required: true
     },
     book: {
         type: Schema.Types.ObjectId,
         ref: "Book",
         required: true
     },
+    type: {
+        type: String,
+    },
     author: {
         type: Schema.Types.ObjectId,
         ref: "User",
         required: true
+    },
+    votes: {
+        type: [{type: Schema.Types.ObjectId, ref: "User", unique: true}],
+        default: []
+    },
+    comments: {
+        type: [{type: Schema.Types.ObjectId, ref: "Comment"}],
+        default: []
     }
 }, {
     timestamps: true,

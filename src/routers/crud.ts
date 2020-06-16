@@ -2,7 +2,7 @@ import BaseRouter from "./base"
 import express from "express"
 import {Request, Response} from "./base"
 import CrudController from "../controllers/crud"
-import { getQueryMiddleWare } from "../middlewares"
+import { getQueryMiddleware, authenticateMiddleware } from "../middlewares"
 
 interface ICrudRoute {
     create(req: Request, res: Response):any
@@ -22,14 +22,22 @@ export class CrudRouter<T extends CrudController<any>> extends BaseRouter implem
     }
     customRouter() {}
     defaultRouter() {
-        this.router.get('/', getQueryMiddleWare.run(), this.route(this.readAll))
-        this.router.get('/:_id', getQueryMiddleWare.run(), this.route(this.readItem))
-        this.router.put('/:_id', getQueryMiddleWare.run(), this.route(this.updateItem))
-        this.router.post('/', this.route(this.create))
-        this.router.delete('/:_id', getQueryMiddleWare.run(), this.route(this.deleteItem))
+        this.router.get('/', getQueryMiddleware.run(), this.route(this.readAll))
+        this.router.get('/test', getQueryMiddleware.run(), this.route(this.test))
+        this.router.get('/:_id', getQueryMiddleware.run(), this.route(this.readItem))
+        this.router.put('/:_id', getQueryMiddleware.run(), this.route(this.updateItem))
+        this.router.post('/', authenticateMiddleware.run(), this.route(this.create))
+        this.router.delete('/:_id', getQueryMiddleware.run(), this.route(this.deleteItem))
+    }
+    async test(req: Request, res: Response) {
+        res.status(200).json(true)
     }
     async create(req: Request, res: Response) {
-        const result = await this.controller.create(req.body, undefined)
+        let author = req.body.author
+        if (req.user && author === undefined) {
+            author = req.user._id
+        }
+        const result = await this.controller.create({...req.body, author}, undefined)
         this.onSuccess(res, result)
     }
     async readAll(req: Request, res: Response) {
