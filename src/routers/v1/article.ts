@@ -16,7 +16,6 @@ export default class ArticleRouter extends CrudRouter <ArticleController> {
 
         if (req.user) {
             const result = await this.controller.like({author: req.user._id}, {filter: {_id} })
-            console.info('9779 result', result)
             return this.onSuccess(res, result)
         }
         return this.onError(res, {

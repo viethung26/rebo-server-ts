@@ -4,7 +4,7 @@ import mongoose from 'mongoose'
 import DatabaseErrorService from "./error/database";
 
 export interface ICrudService {
-    create(data: any, option: ICrudOption): any
+    create(data: any, option?: ICrudOption): any
     readAll(option: ICrudOption): any
     readItem(option: ICrudOption): any
     updateItem(data: any, conditions: ICrudOption): any
@@ -47,7 +47,7 @@ export class CrudService<T extends Model> implements ICrudService {
             }
         }
     }
-    async create(data: any, option: ICrudOption) {
+    async create(data: any, option: ICrudOption = undefined) {
         // 9779 knowledge
         console.info('9779 req', data)
         const query = this.model.create(data)

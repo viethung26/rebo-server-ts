@@ -14,7 +14,6 @@ export default class ArticleService extends CrudService<typeof Article> implemen
     async like(data, option: ICrudOption) {
         const {author} = data
         const article = await DIContainer.get<IArticleService>(TYPES.ArticleService).readItem(option)
-        // console.info('9779 article', article)
         if (article) {
             const votes = article.votes || []
             const index = votes.findIndex(vote => vote.toString() === author.toString())
