@@ -25,9 +25,9 @@ export class CrudRouter<T extends CrudController<any>> extends BaseRouter implem
         this.router.get('/', getQueryMiddleware.run(), this.route(this.readAll))
         this.router.get('/test', getQueryMiddleware.run(), this.route(this.test))
         this.router.get('/:_id', getQueryMiddleware.run(), this.route(this.readItem))
-        this.router.put('/:_id', getQueryMiddleware.run(), this.route(this.updateItem))
+        this.router.put('/:_id', [authenticateMiddleware.run(), getQueryMiddleware.run()], this.route(this.updateItem))
         this.router.post('/', authenticateMiddleware.run(), this.route(this.create))
-        this.router.delete('/:_id', getQueryMiddleware.run(), this.route(this.deleteItem))
+        this.router.delete('/:_id', [authenticateMiddleware.run(), getQueryMiddleware.run()], this.route(this.deleteItem))
     }
     async test(req: Request, res: Response) {
         res.status(200).json(true)

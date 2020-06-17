@@ -12,11 +12,15 @@ export default class UserService extends CrudService<typeof User> {
     }
     async login({username, password}) {
         const item = await this.readItem({filter: {username}})
-        const result = await item.comparePassword(password)
-        if (result) {
-            return item
+        try {
+            const isMatch = await item.comparePassword(password)
+            if (isMatch) {
+                return item
+            }
+        } catch (err) {
+            throw {status: 303, message: 'Wrong username or password'}
         }
-        return null
+       
         // 9779 continue // return jwt for user
     }
 }
