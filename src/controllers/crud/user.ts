@@ -18,4 +18,10 @@ export default class UserController extends CrudController<IUserService> {
         }
         return null
     }
+    async startReading(userId: string, bookId: string) {
+        return this.service.startReading(userId, bookId)
+    }
+    async finishReading(userId: string, bookId: string) {
+        return this.service.finishReading(userId, bookId)
+    }
 }

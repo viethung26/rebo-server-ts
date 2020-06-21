@@ -4,12 +4,14 @@ import ArticleController from "@c/crud/article"
 import BookController from "@c/crud/book"
 import CategoryController from "@c/crud/category"
 import CommentController from "@c/crud/comment"
+import RateController from "./crud/rate"
 
 // 9779 improvement: auto inject
 const userController = new UserController()
 const bookController = new BookController()
 const categoryController = new CategoryController()
 const commentController = new CommentController()
+const rateController = new RateController()
 const articleController = new ArticleController()
 
 export {
@@ -23,5 +25,7 @@ export {
     BookController,
     commentController,
     CommentController,
+    rateController,
+    RateController,
     ICrudService
 }

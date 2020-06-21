@@ -19,13 +19,26 @@ const userSchema = new Schema({
     },
     password: {
         type: String,
-        required: true
+        required: true,
+        select: false 
     },
     displayname: {
         type: String,
     },
     avatar: {
         type: String
+    },
+    categories: {
+        type: [{type: Schema.Types.ObjectId, ref: 'Category', unique: true}],
+        default: []
+    },
+    readings: {
+        type: [{type: Schema.Types.ObjectId, ref: 'Book', unique: true}],
+        default: []
+    },
+    reads: {
+        type: [{type: Schema.Types.ObjectId, ref: 'Book', unique: true}],
+        default: []
     }
 }, {
     timestamps: true,

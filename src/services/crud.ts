@@ -18,6 +18,7 @@ export interface ICrudOption {
     offset?: number
     populates?: any[]
     order?: any
+    lean?: boolean
 }
 
 export class CrudService<T extends Model> implements ICrudService {
@@ -83,6 +84,8 @@ export class CrudService<T extends Model> implements ICrudService {
         if (option.limit) query.limit(option.limit)
         if (option.offset) query.skip(option.offset)
         if (option.order) query.sort(option.order)
+        if (option.lean) query.lean()
+        // query.select("-password")
         option.populates?.forEach(populate => {
             query.populate(populate)
         })

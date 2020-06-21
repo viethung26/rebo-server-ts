@@ -11,6 +11,8 @@ export default class UserRouter extends CrudRouter <UserController> {
         this.router.post("/login", this.route(this.login))
         this.router.get("/logout", authenticateMiddleware.run(), this.route(this.logout))
         this.router.get("/me", authenticateMiddleware.run(), this.route(this.readMe))
+        this.router.post("/startreading", authenticateMiddleware.run(), this.route(this.startReading))
+        this.router.post("/finishreading", authenticateMiddleware.run(), this.route(this.finishReading))
     }
     async login(req: Request, res: Response) {
         const result = await this.controller.login(req.body)
@@ -38,6 +40,22 @@ export default class UserRouter extends CrudRouter <UserController> {
         if (req.user) {
             const {password, ...rest} = req.user._doc
             return this.onSuccess(res, rest)
+        }
+        this.onError(res, {status: 301, message: 'Login before'})
+    }
+    async startReading(req: Request, res: Response) {
+        const {book} = req.body
+        if (req.user && book) {
+            const result = this.controller.startReading(req.user._id, book )
+            return this.onSuccess(res, result)
+        }
+        this.onError(res, {status: 301, message: 'Login before'})
+    }
+    async finishReading(req: Request, res: Response) {
+        const {book} = req.body
+        if (req.user && book) {
+            const result = this.controller.finishReading(req.user._id, book )
+            return this.onSuccess(res, result)
         }
         this.onError(res, {status: 301, message: 'Login before'})
     }

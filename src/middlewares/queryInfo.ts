@@ -8,6 +8,7 @@ export default class QueryInfoMiddleware extends BaseMiddleWare {
         const limit = Number.parseInt(req.query.limit as string) || undefined
         const offset = Number.parseInt(req.query.offset as string) || undefined
         const populates = this.parseJSON(req.query.populates)
+        const lean = req.query.lean === 'true' || false
         console.info('9779 req', req.query)
         const order = this.parseJSON(req.query.order)
         req.queryInfo = {
@@ -15,7 +16,8 @@ export default class QueryInfoMiddleware extends BaseMiddleWare {
             limit,
             offset,
             populates,
-            order
+            order,
+            lean
         }
         next()
     }

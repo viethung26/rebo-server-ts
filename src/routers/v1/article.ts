@@ -12,6 +12,7 @@ export default class ArticleRouter extends CrudRouter <ArticleController> {
         this.router.put("/like/:_id", authenticateMiddleware.run(), this.route(this.like))
         this.router.get("/profile/:username/", authenticateMiddleware.run(), this.route(this.getFeed))
         this.router.get("/book/:slug/", authenticateMiddleware.run(), getQueryMiddleware.run(), this.route(this.getBookArticle))
+        this.router.get("/trending", authenticateMiddleware.run(), getQueryMiddleware.run(), this.route(this.getTrending))
     }
     async like(req: Request, res: Response) {
         const {_id} = req.params
@@ -31,7 +32,7 @@ export default class ArticleRouter extends CrudRouter <ArticleController> {
         const readUser = await DIContainer.get<IUserService>(TYPES.UserService).readItem({filter: {username}})
         console.info('9779 user', readUser)
         if (req.user && readUser) {
-            const result = await this.controller.readAll({filter: {author: readUser._id}, populates: [{path: 'author'}, {path: 'book'}, {path: 'comments', populate: 'author'}], order: {updatedAt: 'asc'}})
+            const result = await this.controller.readAll({filter: {author: readUser._id}, populates: [{path: 'author'}, {path: 'book'}, {path: 'comments', populate: 'author'}], order: {createdAt: 'desc'}})
             return this.onSuccess(res, result)
         }
         return this.onError(res, {
@@ -41,7 +42,6 @@ export default class ArticleRouter extends CrudRouter <ArticleController> {
     }
     async getBookArticle (req: Request, res: Response) {
         const {slug} = req.params
-        console.info('9779 req', req.user)
         if (req.user) {
             const readBook = await DIContainer.get<ICrudService>(TYPES.BookService).readItem({filter: {slug}})
             if (readBook) {
@@ -57,5 +57,9 @@ export default class ArticleRouter extends CrudRouter <ArticleController> {
             message: "Login before Like",
             status: 301
         })
+    }
+    async getTrending(req: Request, res: Response) {
+        const result = await this.controller.readTrending()
+        return this.onSuccess(res, result)
     }
 }

@@ -6,6 +6,7 @@ export interface BookModel extends BaseModel {
     author: string
     description?: string
     categories?: any[]
+    cover?: string
     slug?: string
 }
 
@@ -28,14 +29,24 @@ const bookSchema: Schema<BookModel> = new Schema({
         required: true
 
     },
+    cover: {
+        type: String,
+        default: null
+    },
     slug: {
         type: String,
         default: "/",
         unique: true
+    },
+    rates: {
+        type: [Schema.Types.ObjectId],
+        ref: "Rate",
+        default: []
     }
 }, {
     timestamps: true,
-    collection: 'book'
+    collection: 'book',
+    toJSON: {virtuals: true}
 })
 bookSchema.pre("save", function(next, doc) {
     const book = this as BookModel
@@ -45,5 +56,8 @@ bookSchema.pre("save", function(next, doc) {
         strict: true
     })
     next()
+})
+bookSchema.virtual('rateAvg').get(function() {
+    return 5
 })
 export const Book: mongoose.Model<BookModel> = mongoose.model('Book', bookSchema)

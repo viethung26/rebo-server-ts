@@ -10,4 +10,7 @@ export default class ArticleController extends CrudController<IArticleService> {
     async like(data, options: ICrudOption) {
         return await this.service.like(data, options)
     }
+    async readTrending() {
+        return await this.service.readTrending()
+    }
 }
