@@ -13,4 +13,7 @@ export default class ArticleController extends CrudController<IArticleService> {
     async readTrending() {
         return await this.service.readTrending()
     }
+    async readInterest(categories, options) {
+        return await this.service.readInterest(categories, options)
+    }
 }

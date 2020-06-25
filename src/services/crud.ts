@@ -19,6 +19,7 @@ export interface ICrudOption {
     populates?: any[]
     order?: any
     lean?: boolean
+    fields?: string
 }
 
 export class CrudService<T extends Model> implements ICrudService {
@@ -35,6 +36,7 @@ export class CrudService<T extends Model> implements ICrudService {
 
         } 
         catch(err) {
+            console.info('9779 error exec', err)
             if (err instanceof mongoose.mongo.MongoError) {
                 throw new DatabaseErrorService(err).getErrorData()
             }
@@ -50,7 +52,6 @@ export class CrudService<T extends Model> implements ICrudService {
     }
     async create(data: any, option: ICrudOption = undefined) {
         // 9779 knowledge
-        console.info('9779 req', data)
         const query = this.model.create(data)
         const result = await this.exec(query)
         return result
@@ -85,7 +86,9 @@ export class CrudService<T extends Model> implements ICrudService {
         if (option.offset) query.skip(option.offset)
         if (option.order) query.sort(option.order)
         if (option.lean) query.lean()
-        // query.select("-password")
+        if (option.fields) {
+            query.select(option.fields)
+        }
         option.populates?.forEach(populate => {
             query.populate(populate)
         })

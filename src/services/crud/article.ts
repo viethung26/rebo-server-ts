@@ -5,7 +5,8 @@ import { DIContainer, TYPES } from "..";
 import mongoose from 'mongoose'
 export interface IArticleService extends ICrudService {
     like(data, option: ICrudOption): any
-    readTrending(): any
+    readTrending(option?: {skip: number}): any
+    readInterest(categories, options?: {skip: number}): any
 }
 @injectable()
 export default class ArticleService extends CrudService<typeof Article> implements IArticleService {
@@ -29,10 +30,11 @@ export default class ArticleService extends CrudService<typeof Article> implemen
         }
         return undefined
     }
-    async readTrending() {
+    async readTrending(options = {skip: 0}) {
         const COMMENT_POINT = 1.5
         const VOTE_POINT = 1
-        const LIMIT = 2
+        const LIMIT = 10
+        const skip = options.skip
         // Get trendPoint by sum of comment size and vote size
         return await Article.aggregate([
             {
@@ -49,7 +51,10 @@ export default class ArticleService extends CrudService<typeof Article> implemen
                 $sort: {trendPoint: -1}
             },
             {
-                $limit: 1
+                $skip: skip
+            },
+            {
+                $limit: LIMIT
             },
             {
                 $lookup: {
@@ -61,24 +66,25 @@ export default class ArticleService extends CrudService<typeof Article> implemen
             },
             {
                 $lookup: {
+                    from: "book",
+                    localField: "book",
+                    foreignField: "_id",
+                    as: "book"
+                }
+            },
+            {
+                $lookup: {
                     from: "comment",
                     localField: "comments",
                     foreignField: "_id",
                     as: "comments"
                 }
             },
-            // {
-            //     $graphLookup: {
-            //         from: "user",
-            //         startWith: "$comments",
-            //         connectFromField: "comments",
-            //         connectToField: "_id",
-            //         as: "author2",
-            //         depthField: "author"
-            //      }
-            // },
             {
                 $unwind: "$author"
+            },
+            {
+                $unwind: "$book"
             },
             {
                     $project: {
@@ -111,14 +117,104 @@ export default class ArticleService extends CrudService<typeof Article> implemen
                     title: { "$first": "$title" },
                     content: { "$first": "$content" },
                     book: { "$first": "$book" },
-                    comments: { "$first": "$comments" },
+                    createdAt: { "$first": "$createdAt" },
+                    updatedAt: { "$first": "$updatedAt" },
+                    type: { "$first": "$type" },
+                    votes: { "$first": "$votes" },
+                    trendPoint: { "$first": "$trendPoint" },
+                    comments: { $push: "$comments" },
+                }
+            },
+            {
+                $sort: {trendPoint: -1}
+            }
+        ])
+    }
+    async readInterest(categories, options = {skip: 0}) {
+        const LIMIT = 10
+        const skip = options.skip || 0
+        return await Article.aggregate([
+            {
+                $match: { 
+                    // _id: {$nin: reads},
+                    categories: {$elemMatch: {$in: categories} },
+                }
+            },
+            {
+                $skip: skip
+            },
+            {
+                $limit: LIMIT
+            },
+            {
+                $lookup: {
+                    from: "user",
+                    localField: "author",
+                    foreignField: "_id",
+                    as: "author"
+                }
+            },
+            {
+                $lookup: {
+                    from: "book",
+                    localField: "book",
+                    foreignField: "_id",
+                    as: "book"
+                }
+            },
+            {
+                $lookup: {
+                    from: "comment",
+                    localField: "comments",
+                    foreignField: "_id",
+                    as: "comments"
+                }
+            },
+            {
+                $unwind: "$author"
+            },
+            {
+                $unwind: "$book"
+            },
+            {
+                    $project: {
+                        author: {password: 0}
+                    }
+                },
+            {
+                $unwind: "$comments"
+            },
+            {
+                $lookup: {
+                    from: "user",
+                    localField: "comments.author",
+                    foreignField: "_id",
+                    as: "comments.author"
+                }
+            },
+            {
+                $unwind: "$comments.author"
+            },
+            {
+                $project: {
+                    comments: {author: {password: 0}}
+                }
+            },
+            {
+                $group: {
+                    _id: "$_id",
+                    author: { "$first": "$author" },
+                    title: { "$first": "$title" },
+                    content: { "$first": "$content" },
+                    book: { "$first": "$book" },
+                    createdAt: { "$first": "$createdAt" },
+                    updatedAt: { "$first": "$updatedAt" },
+                    type: { "$first": "$type" },
+                    votes: { "$first": "$votes" },
+                    trendPoint: { "$first": "$trendPoint" },
+                    comments: { $push: "$comments" },
                 }
             }
-            // {
-            //     $project: {
-            //         author: {password: 0}
-            //     }
-            // }
         ])
     }
 }

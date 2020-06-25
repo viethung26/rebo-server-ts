@@ -29,15 +29,15 @@ const userSchema = new Schema({
         type: String
     },
     categories: {
-        type: [{type: Schema.Types.ObjectId, ref: 'Category', unique: true}],
+        type: [{type: Schema.Types.ObjectId, ref: 'Category'}],
         default: []
     },
     readings: {
-        type: [{type: Schema.Types.ObjectId, ref: 'Book', unique: true}],
+        type: [{type: Schema.Types.ObjectId, ref: 'Book'}],
         default: []
     },
     reads: {
-        type: [{type: Schema.Types.ObjectId, ref: 'Book', unique: true}],
+        type: [{type: Schema.Types.ObjectId, ref: 'Book'}],
         default: []
     }
 }, {
@@ -46,6 +46,7 @@ const userSchema = new Schema({
 })
 
 userSchema.pre("save", function (next) {
+    console.info('9779 save')
     const user = this as UserModel
     bcrypt.genSalt(SALT_ROUND, (err, salt) => {
         if (err) return next(err)
@@ -58,6 +59,7 @@ userSchema.pre("save", function (next) {
 })
 
 userSchema.methods.comparePassword = async function(pass: string) {
+    console.info('9779 pass', pass, this)
     return new Promise((resolve, reject) => {
         bcrypt.compare(pass, this.password, (err, isMatch) => {
             if (err) reject(err)

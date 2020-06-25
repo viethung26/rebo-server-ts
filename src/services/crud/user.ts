@@ -13,13 +13,16 @@ export default class UserService extends CrudService<typeof User> implements IUs
         super(User)
     }
     async login({username, password}) {
-        const item = await this.readItem({filter: {username}})
+        const item = await this.readItem({filter: {username}, fields: '+password'})
         try {
             const isMatch = await item.comparePassword(password)
             if (isMatch) {
-                return item
+                const {password, ...rest} = item._doc
+                return rest
             }
         } catch (err) {
+            console.info('9779 issmatch', err)
+
             throw {status: 303, message: 'Wrong username or password'}
         }
        

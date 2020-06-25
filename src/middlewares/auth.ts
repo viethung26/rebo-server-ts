@@ -6,6 +6,7 @@ import { DIContainer, ITokenService, TYPES, UserService } from "@s";
 export default class AuthenticationMiddleware extends BaseMiddleWare {
     async use(req: Request, res: Response, next: express.NextFunction, options?: any) {
         const { token } = req.cookies || {}
+        console.info('9779 token', token)
         if (token) {
             const data = await DIContainer.get<ITokenService>(TYPES.TokenService).verify(token, {})
             if (data) {

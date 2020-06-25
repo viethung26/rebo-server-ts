@@ -11,8 +11,8 @@ export default class UserRouter extends CrudRouter <UserController> {
         this.router.post("/login", this.route(this.login))
         this.router.get("/logout", authenticateMiddleware.run(), this.route(this.logout))
         this.router.get("/me", authenticateMiddleware.run(), this.route(this.readMe))
-        this.router.post("/startreading", authenticateMiddleware.run(), this.route(this.startReading))
-        this.router.post("/finishreading", authenticateMiddleware.run(), this.route(this.finishReading))
+        this.router.put("/startreading", authenticateMiddleware.run(), this.route(this.startReading))
+        this.router.put("/finishreading", authenticateMiddleware.run(), this.route(this.finishReading))
     }
     async login(req: Request, res: Response) {
         const result = await this.controller.login(req.body)
@@ -45,6 +45,7 @@ export default class UserRouter extends CrudRouter <UserController> {
     }
     async startReading(req: Request, res: Response) {
         const {book} = req.body
+        console.info('9779 book', book)
         if (req.user && book) {
             const result = this.controller.startReading(req.user._id, book )
             return this.onSuccess(res, result)
