@@ -24,8 +24,7 @@ const bookSchema: Schema<BookModel> = new Schema({
         type: String
     },
     categories: {
-        type: [Schema.Types.ObjectId],
-        ref: "Category",
+        type: [{type: Schema.Types.ObjectId, ref: "Category"}],
         required: true
 
     },
@@ -39,8 +38,7 @@ const bookSchema: Schema<BookModel> = new Schema({
         unique: true
     },
     rates: {
-        type: [Schema.Types.ObjectId],
-        ref: "Rate",
+        type: [{type: Schema.Types.ObjectId, ref: "Rate"}],
         default: []
     }
 }, {

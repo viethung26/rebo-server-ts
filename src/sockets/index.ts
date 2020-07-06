@@ -22,17 +22,6 @@ export default class Socket {
 
             }, 5000)
             this.articleEvent(socket)
-
-            socket.on('connect', fn => {
-                fn("sss")
-            })
-            socket.on('disconnect', fn => {
-                console.info('9779 dis')
-            })
-            socket.on('message', (data, fn) => {
-                console.info('9779 message', data)
-                fn("xx")
-            })
         })
     }
 

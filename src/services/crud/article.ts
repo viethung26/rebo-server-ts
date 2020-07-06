@@ -3,6 +3,7 @@ import { Article } from "@m/article";
 import {injectable} from 'inversify'
 import { DIContainer, TYPES } from "..";
 import mongoose from 'mongoose'
+import { Book } from "@m/book";
 export interface IArticleService extends ICrudService {
     like(data, option: ICrudOption): any
     readTrending(option?: {skip: number}): any
@@ -36,6 +37,7 @@ export default class ArticleService extends CrudService<typeof Article> implemen
         const LIMIT = 10
         const skip = options.skip
         // Get trendPoint by sum of comment size and vote size
+       
         return await Article.aggregate([
             {
                 $addFields: {
@@ -133,11 +135,43 @@ export default class ArticleService extends CrudService<typeof Article> implemen
     async readInterest(categories, options = {skip: 0}) {
         const LIMIT = 10
         const skip = options.skip || 0
+        // await Book.aggregate([
+        //     // get all books in categories, not in reads having rate number > 1
+        //     {
+        //         $match: { 
+        //             categories: {$elemMatch: {$in: categories} }
+        //         }
+        //     },
         return await Article.aggregate([
             {
+                $lookup: {
+                    from: "book",
+                    let: {bookId: "$book"},
+                    pipeline: [
+                        {
+                            $match: {
+                                categories: {
+                                    $elemMatch: {$in: categories}
+                                },
+                                $expr: {
+                                    $and: [
+                                        
+                                        {
+                                            $eq: ["$$bookId", "$_id"]
+                                        }
+                                    ]
+                                    
+                                }
+                                
+                            }
+                        }
+                    ],
+                    as: "book"
+                }
+            },
+            {
                 $match: { 
-                    // _id: {$nin: reads},
-                    categories: {$elemMatch: {$in: categories} },
+                    $expr: { $gt: [{$size: "$book"}, 0] }
                 }
             },
             {
@@ -154,14 +188,14 @@ export default class ArticleService extends CrudService<typeof Article> implemen
                     as: "author"
                 }
             },
-            {
-                $lookup: {
-                    from: "book",
-                    localField: "book",
-                    foreignField: "_id",
-                    as: "book"
-                }
-            },
+            // {
+            //     $lookup: {
+            //         from: "book",
+            //         localField: "book",
+            //         foreignField: "_id",
+            //         as: "book"
+            //     }
+            // },
             {
                 $lookup: {
                     from: "comment",
@@ -211,10 +245,12 @@ export default class ArticleService extends CrudService<typeof Article> implemen
                     updatedAt: { "$first": "$updatedAt" },
                     type: { "$first": "$type" },
                     votes: { "$first": "$votes" },
-                    trendPoint: { "$first": "$trendPoint" },
                     comments: { $push: "$comments" },
                 }
-            }
+            },
+            {
+                $sort: {createdAt: -1}
+            },
         ])
     }
 }
